@@ -1,0 +1,20 @@
+default_language: "en"
+fallback_language: "en"
+locales_path: "./locales"
+
+cache:
+  enable: true
+  size: 1000
+  ttl: "1h"
+  l2_size: 5000
+  enable_file: false
+
+pool:
+  enable: true
+  size: 100
+  warm_up: true
+  languages: ["en", "zh-CN"]
+
+debug: true
+enable_metrics: true
+enable_watcher: true

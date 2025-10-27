@@ -1,0 +1,22 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "Welcome"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "Hello, {{.name}}!"
+  },
+  {
+    "id": "SUCCESS",
+    "translation": "Success"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "User not found"
+  },
+  {
+    "id": "INTERNAL_ERROR",
+    "translation": "Internal server error"
+  }
+]

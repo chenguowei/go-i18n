@@ -1,0 +1,22 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "欢迎"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "你好，{{.name}}！"
+  },
+  {
+    "id": "SUCCESS",
+    "translation": "成功"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "用户不存在"
+  },
+  {
+    "id": "INTERNAL_ERROR",
+    "translation": "内部服务器错误"
+  }
+]
