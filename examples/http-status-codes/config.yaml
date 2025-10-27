@@ -1,0 +1,14 @@
+# HTTP Status Codes 示例配置
+i18n:
+  default_language: zh-CN
+  languages: [zh-CN, en]
+  locales_dir: locales
+
+response:
+  load_builtin: true
+  auto_init: true
+
+cache:
+  l1_max_size: 1000
+  l2_max_size: 10000
+  ttl: 3600s

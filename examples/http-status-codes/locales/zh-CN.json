@@ -1,0 +1,22 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "欢迎使用 HTTP Status 码示例"
+  },
+  {
+    "id": "USER_CREATED",
+    "translation": "用户创建成功"
+  },
+  {
+    "id": "USER_UPDATED",
+    "translation": "用户更新成功"
+  },
+  {
+    "id": "USER_DELETED",
+    "translation": "用户删除成功"
+  },
+  {
+    "id": "USERS_LIST",
+    "translation": "用户列表"
+  }
+]

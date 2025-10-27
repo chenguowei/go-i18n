@@ -42,8 +42,13 @@ func JSON(c *gin.Context, code Code, data interface{}) {
 	JSONWithMeta(c, code, data, nil)
 }
 
-// JSONWithMeta 返回带元数据的 JSON 响应
-func JSONWithMeta(c *gin.Context, code Code, data interface{}, meta *Meta) {
+// JSONWithStatus 返回指定 HTTP 状态码的 JSON 响应
+func JSONWithStatus(c *gin.Context, code Code, data interface{}, httpStatus int) {
+	JSONWithStatusAndMeta(c, code, data, httpStatus, nil)
+}
+
+// JSONWithStatusAndMeta 返回指定 HTTP 状态码和元数据的 JSON 响应
+func JSONWithStatusAndMeta(c *gin.Context, code Code, data interface{}, httpStatus int, meta *Meta) {
 	// 获取语言信息
 	lang := "en"
 	if l, exists := c.Get("i18n_language"); exists {
@@ -79,11 +84,21 @@ func JSONWithMeta(c *gin.Context, code Code, data interface{}, meta *Meta) {
 		Meta:    meta,
 	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(httpStatus, response)
+}
+
+// JSONWithMeta 返回带元数据的 JSON 响应
+func JSONWithMeta(c *gin.Context, code Code, data interface{}, meta *Meta) {
+	JSONWithStatusAndMeta(c, code, data, http.StatusOK, meta)
 }
 
 // JSONWithTemplate 支持模板参数的响应
 func JSONWithTemplate(c *gin.Context, code Code, data interface{}, templateData map[string]interface{}) {
+	JSONWithTemplateAndStatus(c, code, data, templateData, http.StatusOK)
+}
+
+// JSONWithTemplateAndStatus 支持模板参数和自定义 HTTP 状态码的响应
+func JSONWithTemplateAndStatus(c *gin.Context, code Code, data interface{}, templateData map[string]interface{}, httpStatus int) {
 	// 这里可以集成 i18n 模板翻译
 	message := GetMessage(code)
 	if templateData != nil {
@@ -94,7 +109,7 @@ func JSONWithTemplate(c *gin.Context, code Code, data interface{}, templateData 
 		}
 	}
 
-	JSONWithMeta(c, code, data, &Meta{})
+	JSONWithStatusAndMeta(c, code, data, httpStatus, &Meta{})
 }
 
 // Error 返回错误响应
@@ -106,6 +121,20 @@ func Error(c *gin.Context, code Code, message string) {
 
 // ErrorWithMessage 返回自定义错误消息的响应
 func ErrorWithMessage(c *gin.Context, code Code, message string) {
+	JSONWithStatusAndMeta(c, code, nil, http.StatusOK, &Meta{
+		Timestamp: time.Now(),
+	})
+}
+
+// ErrorWithStatus 返回指定 HTTP 状态码的错误响应
+func ErrorWithStatus(c *gin.Context, code Code, httpStatus int) {
+	JSONWithStatusAndMeta(c, code, nil, httpStatus, &Meta{
+		Timestamp: time.Now(),
+	})
+}
+
+// ErrorWithMessageAndStatus 返回自定义错误消息和 HTTP 状态码的响应
+func ErrorWithMessageAndStatus(c *gin.Context, code Code, message string, httpStatus int) {
 	response := Response{
 		Code:    code,
 		Message: message,
@@ -115,7 +144,7 @@ func ErrorWithMessage(c *gin.Context, code Code, message string) {
 		},
 	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(httpStatus, response)
 }
 
 // Success 成功响应的便捷方法

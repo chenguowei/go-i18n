@@ -1,0 +1,22 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "Welcome to HTTP Status Codes Example"
+  },
+  {
+    "id": "USER_CREATED",
+    "translation": "User created successfully"
+  },
+  {
+    "id": "USER_UPDATED",
+    "translation": "User updated successfully"
+  },
+  {
+    "id": "USER_DELETED",
+    "translation": "User deleted successfully"
+  },
+  {
+    "id": "USERS_LIST",
+    "translation": "Users list"
+  }
+]
