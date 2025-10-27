@@ -1,9 +1,21 @@
 package response
 
+import (
+	"sync"
+)
+
 // Code 错误码类型
 type Code int
 
-// 常用错误码定义
+// 全局错误码注册表
+var (
+	codeMessages   map[Code]string
+	httpStatusCodes map[Code]int
+	mu             sync.RWMutex
+	initialized    bool
+)
+
+// 内置错误码定义（可选加载）
 const (
 	// 成功
 	Success Code = 0
@@ -72,8 +84,8 @@ const (
 	UnknownError      Code = 9999 // 未知错误
 )
 
-// 错误码映射表
-var codeMessages = map[Code]string{
+// 内置错误码映射表
+var builtinCodeMessages = map[Code]string{
 	Success:          "SUCCESS",
 	InvalidParam:     "INVALID_PARAM",
 	MissingParam:     "MISSING_PARAM",
@@ -131,8 +143,8 @@ var codeMessages = map[Code]string{
 	UnknownError:      "UNKNOWN_ERROR",
 }
 
-// HTTP 状态码映射
-var httpStatusCodes = map[Code]int{
+// 内置 HTTP 状态码映射
+var builtinHTTPStatusCodes = map[Code]int{
 	Success:          200,
 	InvalidParam:     400,
 	MissingParam:     400,
@@ -190,20 +202,122 @@ var httpStatusCodes = map[Code]int{
 	UnknownError:      500,
 }
 
+// InitCodes 初始化错误码系统
+func InitCodes(loadBuiltin bool) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if initialized {
+		return
+	}
+
+	// 初始化空的映射表
+	codeMessages = make(map[Code]string)
+	httpStatusCodes = make(map[Code]int)
+
+	// 加载内置错误码（可选）
+	if loadBuiltin {
+		for code, message := range builtinCodeMessages {
+			codeMessages[code] = message
+		}
+		for code, status := range builtinHTTPStatusCodes {
+			httpStatusCodes[code] = status
+		}
+	}
+
+	initialized = true
+}
+
+// IsInitialized 检查是否已初始化
+func IsInitialized() bool {
+	mu.RLock()
+	defer mu.RUnlock()
+	return initialized
+}
+
+// ResetCodes 重置错误码系统（清空所有注册的错误码）
+func ResetCodes() {
+	mu.Lock()
+	defer mu.Unlock()
+	codeMessages = make(map[Code]string)
+	httpStatusCodes = make(map[Code]int)
+	initialized = false
+}
+
+// LoadBuiltinCodes 加载内置错误码（可以重复调用）
+func LoadBuiltinCodes() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		codeMessages = make(map[Code]string)
+		httpStatusCodes = make(map[Code]int)
+		initialized = true
+	}
+
+	// 加载内置错误码（不会覆盖已存在的自定义错误码）
+	for code, message := range builtinCodeMessages {
+		if _, exists := codeMessages[code]; !exists {
+			codeMessages[code] = message
+		}
+	}
+	for code, status := range builtinHTTPStatusCodes {
+		if _, exists := httpStatusCodes[code]; !exists {
+			httpStatusCodes[code] = status
+		}
+	}
+}
+
+// LoadBuiltinCodesForce 强制加载内置错误码（会覆盖已存在的错误码）
+func LoadBuiltinCodesForce() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		codeMessages = make(map[Code]string)
+		httpStatusCodes = make(map[Code]int)
+		initialized = true
+	}
+
+	// 强制加载内置错误码（会覆盖已存在的自定义错误码）
+	for code, message := range builtinCodeMessages {
+		codeMessages[code] = message
+	}
+	for code, status := range builtinHTTPStatusCodes {
+		httpStatusCodes[code] = status
+	}
+}
+
 // GetMessage 获取错误码对应的消息
 func GetMessage(code Code) string {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	if !initialized {
+		// 自动初始化并加载内置错误码
+		InitCodes(true)
+	}
+
 	if message, exists := codeMessages[code]; exists {
 		return message
 	}
-	return codeMessages[UnknownError]
+	return "UNKNOWN_ERROR"
 }
 
 // GetHTTPStatus 获取错误码对应的 HTTP 状态码
 func GetHTTPStatus(code Code) int {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	if !initialized {
+		// 自动初始化并加载内置错误码
+		InitCodes(true)
+	}
+
 	if status, exists := httpStatusCodes[code]; exists {
 		return status
 	}
-	return httpStatusCodes[UnknownError]
+	return 500
 }
 
 // IsSuccess 判断是否为成功状态
@@ -252,16 +366,140 @@ func GetCategory(code Code) ErrorCategory {
 
 // SetCustomMessage 设置自定义消息
 func SetCustomMessage(code Code, message string) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		InitCodes(false)
+	}
+
 	codeMessages[code] = message
 }
 
 // SetHTTPStatus 设置自定义 HTTP 状态码
 func SetHTTPStatus(code Code, status int) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		InitCodes(false)
+	}
+
 	httpStatusCodes[code] = status
 }
 
 // RegisterCustomCode 注册自定义错误码
 func RegisterCustomCode(code Code, message string, httpStatus int) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		InitCodes(false)
+	}
+
 	codeMessages[code] = message
 	httpStatusCodes[code] = httpStatus
+}
+
+// UnregisterCode 注销错误码
+func UnregisterCode(code Code) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if initialized {
+		delete(codeMessages, code)
+		delete(httpStatusCodes, code)
+	}
+}
+
+// GetRegisteredCodes 获取所有已注册的错误码
+func GetRegisteredCodes() map[Code]string {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	if !initialized {
+		return make(map[Code]string)
+	}
+
+	// 返回副本
+	result := make(map[Code]string)
+	for code, message := range codeMessages {
+		result[code] = message
+	}
+	return result
+}
+
+// GetCodeStats 获取错误码统计信息
+func GetCodeStats() map[string]int {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	stats := map[string]int{
+		"total":     0,
+		"client":    0,
+		"server":    0,
+		"success":   0,
+		"custom":    0,
+	}
+
+	if !initialized {
+		return stats
+	}
+
+	for code := range codeMessages {
+		stats["total"]++
+
+		// 检查是否为内置错误码
+		if _, isBuiltin := builtinCodeMessages[code]; isBuiltin {
+			if code == Success {
+				stats["success"]++
+			} else if IsClientError(code) {
+				stats["client"]++
+			} else if IsServerError(code) {
+				stats["server"]++
+			}
+		} else {
+			stats["custom"]++
+		}
+	}
+
+	return stats
+}
+
+// BatchRegisterCodes 批量注册自定义错误码
+type CodeDefinition struct {
+	Code        Code
+	Message     string
+	HTTPStatus  int
+}
+
+func BatchRegisterCodes(codes []CodeDefinition) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		InitCodes(false)
+	}
+
+	for _, def := range codes {
+		codeMessages[def.Code] = def.Message
+		httpStatusCodes[def.Code] = def.HTTPStatus
+	}
+}
+
+// LoadCodesFromMap 从映射表加载错误码
+func LoadCodesFromMap(messages map[Code]string, status map[Code]int) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if !initialized {
+		InitCodes(false)
+	}
+
+	for code, message := range messages {
+		codeMessages[code] = message
+	}
+	for code, httpStatus := range status {
+		httpStatusCodes[code] = httpStatus
+	}
 }

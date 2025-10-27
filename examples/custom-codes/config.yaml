@@ -1,0 +1,32 @@
+# 自定义错误码配置示例
+default_language: "zh-CN"
+fallback_language: "en"
+locales_path: "locales"
+
+# 语言文件配置
+locale_config:
+  mode: "flat"
+  languages:
+    - "en"
+    - "zh-CN"
+
+# 响应码配置
+response_config:
+  load_builtin: false  # 不加载内置错误码
+  auto_init: true      # 自动初始化
+
+# 缓存配置
+cache:
+  enable: true
+  size: 100
+  ttl: "1h"
+
+# 对象池配置
+pool:
+  enable: true
+  size: 50
+  warm_up: true
+
+# 调试和监控
+debug: true
+enable_metrics: true

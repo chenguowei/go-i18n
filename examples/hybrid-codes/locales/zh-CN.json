@@ -1,0 +1,10 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "欢迎使用混合API"
+  },
+  {
+    "id": "SUCCESS_MESSAGE",
+    "translation": "操作成功完成"
+  }
+]

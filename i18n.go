@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/chenguowei/go-i18n/internal"
+	"github.com/chenguowei/go-i18n/response"
 )
 
 var (
@@ -41,6 +42,9 @@ type Config struct {
 
 	// 语言文件配置
 	LocaleConfig LocaleConfig `yaml:"locale_config" json:"locale_config"`
+
+	// 响应码配置
+	ResponseConfig ResponseConfig `yaml:"response_config" json:"response_config"`
 
 	// 缓存配置
 	Cache CacheConfig `yaml:"cache" json:"cache"`
@@ -75,6 +79,12 @@ type LocaleConfig struct {
 	Modules []string `yaml:"modules,omitempty" json:"modules,omitempty"`
 }
 
+// ResponseConfig 响应码配置
+type ResponseConfig struct {
+	LoadBuiltin bool `yaml:"load_builtin" json:"load_builtin"`
+	AutoInit     bool `yaml:"auto_init" json:"auto_init"`
+}
+
 // PoolConfig 对象池配置
 type PoolConfig struct {
 	Enable    bool     `yaml:"enable" json:"enable"`
@@ -91,6 +101,10 @@ var DefaultConfig = Config{
 	LocaleConfig: LocaleConfig{
 		Mode:      "flat",
 		Languages: []string{"en", "zh-CN", "zh-TW"},
+	},
+	ResponseConfig: ResponseConfig{
+		LoadBuiltin: true, // 默认加载内置错误码
+		AutoInit:     true, // 自动初始化
 	},
 	Cache: CacheConfig{
 		Enable:     true,
@@ -137,6 +151,11 @@ func InitFromConfigFile(configPath string) error {
 func NewService(config Config) (*Service, error) {
 	if err := ValidateConfig(config); err != nil {
 		return nil, err
+	}
+
+	// 初始化响应码系统
+	if config.ResponseConfig.AutoInit {
+		response.InitCodes(config.ResponseConfig.LoadBuiltin)
 	}
 
 	// 创建 bundle

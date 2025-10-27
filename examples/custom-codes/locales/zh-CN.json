@@ -1,0 +1,10 @@
+[
+  {
+    "id": "OPERATION_SUCCESS",
+    "translation": "操作成功完成"
+  },
+  {
+    "id": "WELCOME_MESSAGE",
+    "translation": "欢迎使用我们的自定义API"
+  }
+]

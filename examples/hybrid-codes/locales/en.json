@@ -1,0 +1,10 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "Welcome to Hybrid API"
+  },
+  {
+    "id": "SUCCESS_MESSAGE",
+    "translation": "Operation completed successfully"
+  }
+]
