@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
-	"github.com/chenguowei/go-i18n/response"
 )
 
 func main() {
@@ -53,25 +52,25 @@ func main() {
 // 添加自定义错误码
 func addCustomCodes() {
 	// 业务相关的自定义错误码
-	businessCodes := []response.CodeDefinition{
+	businessCodes := []i18n.CodeDefinition{
 		{Code: 5000, Message: "PRODUCT_OUT_OF_STOCK", HTTPStatus: 422},
 		{Code: 5001, Message: "PROMOTION_EXPIRED", HTTPStatus: 410},
 		{Code: 5002, Message: "COUPON_ALREADY_USED", HTTPStatus: 409},
 		{Code: 5003, Message: "MEMBERSHIP_REQUIRED", HTTPStatus: 402},
 	}
 
-	response.BatchRegisterCodes(businessCodes)
+	i18n.BatchRegisterCodes(businessCodes)
 
 	// 设置自定义消息覆盖内置错误码
-	response.SetCustomMessage(response.InvalidParam, "CUSTOM_INVALID_PARAM")
-	response.SetCustomMessage(response.UserNotFound, "CUSTOM_USER_NOT_FOUND")
+	i18n.SetCustomMessage(i18n.InvalidParam, "CUSTOM_INVALID_PARAM")
+	i18n.SetCustomMessage(i18n.UserNotFound, "CUSTOM_USER_NOT_FOUND")
 
 	fmt.Println("✅ Hybrid error codes setup completed")
 }
 
 func builtinHandler(c *gin.Context) {
 	// 使用内置错误码
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"message": "Using built-in error codes",
 		"codes": []string{
 			"InvalidParam",
@@ -83,13 +82,13 @@ func builtinHandler(c *gin.Context) {
 
 	// 测试内置错误码
 	if c.Query("error") == "param" {
-		response.JSON(c, response.InvalidParam, map[string]interface{}{
+		i18n.JSON(c, i18n.InvalidParam, map[string]interface{}{
 			"error": "Invalid parameter provided",
 		})
 	}
 
 	if c.Query("error") == "user" {
-		response.JSON(c, response.UserNotFound, map[string]interface{}{
+		i18n.JSON(c, i18n.UserNotFound, map[string]interface{}{
 			"error": "User not found",
 		})
 	}
@@ -97,7 +96,7 @@ func builtinHandler(c *gin.Context) {
 
 func customHandler(c *gin.Context) {
 	// 使用自定义错误码
-	response.JSON(c, 0, map[string]interface{}{
+	i18n.JSON(c, 0, map[string]interface{}{
 		"message": "Using custom error codes",
 		"codes": []string{
 			"PRODUCT_OUT_OF_STOCK",
@@ -109,25 +108,25 @@ func customHandler(c *gin.Context) {
 
 	// 测试自定义错误码
 	if c.Query("error") == "stock" {
-		response.JSON(c, 5000, map[string]interface{}{
+		i18n.JSON(c, 5000, map[string]interface{}{
 			"error": "Product is out of stock",
 		})
 	}
 
 	if c.Query("error") == "promotion" {
-		response.JSON(c, 5001, map[string]interface{}{
+		i18n.JSON(c, 5001, map[string]interface{}{
 			"error": "Promotion has expired",
 		})
 	}
 }
 
 func overviewHandler(c *gin.Context) {
-	stats := response.GetCodeStats()
-	registeredCodes := response.GetRegisteredCodes()
+	stats := i18n.GetCodeStats()
+	registeredCodes := i18n.GetRegisteredCodes()
 
 	// 分类统计
-	customCodes := make(map[response.Code]string)
-	builtinCodes := make(map[response.Code]string)
+	customCodes := make(map[i18n.Code]string)
+	builtinCodes := make(map[i18n.Code]string)
 
 	for code, message := range registeredCodes {
 		// 简单判断是否为内置错误码（基于错误码范围）
@@ -138,11 +137,11 @@ func overviewHandler(c *gin.Context) {
 		}
 	}
 
-	response.JSON(c, 0, map[string]interface{}{
+	i18n.JSON(c, 0, map[string]interface{}{
 		"statistics": stats,
 		"total_registered": len(registeredCodes),
 		"builtin_codes": builtinCodes,
 		"custom_codes": customCodes,
-		"is_initialized": response.IsInitialized(),
+		"is_initialized": i18n.IsInitialized(),
 	})
 }

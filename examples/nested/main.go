@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
-	"github.com/chenguowei/go-i18n/response"
 )
 
 func main() {
@@ -61,7 +60,7 @@ func welcomeHandler(c *gin.Context) {
 	// 使用通用模块的翻译
 	message := i18n.TFromGin(c, "WELCOME")
 
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"message": message,
 		"lang":    i18n.GetLanguageFromGin(c),
 	})
@@ -75,7 +74,7 @@ func helloHandler(c *gin.Context) {
 		"name": name,
 	})
 
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"message": message,
 		"lang":    i18n.GetLanguageFromGin(c),
 	})
@@ -83,7 +82,7 @@ func helloHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
 	// 使用错误模块的翻译
-	response.JSON(c, response.ErrUserNotFound, nil)
+	i18n.JSON(c, i18n.ErrUserNotFound, nil)
 }
 
 func userProfileHandler(c *gin.Context) {
@@ -95,5 +94,5 @@ func userProfileHandler(c *gin.Context) {
 		"save":        i18n.TFromGin(c, "SAVE_CHANGES"),
 	}
 
-	response.JSON(c, response.Success, data)
+	i18n.JSON(c, i18n.Success, data)
 }

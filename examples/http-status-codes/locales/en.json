@@ -18,5 +18,41 @@
   {
     "id": "USERS_LIST",
     "translation": "Users list"
+  },
+  {
+    "id": "SUCCESS",
+    "translation": "Operation successful"
+  },
+  {
+    "id": "INVALID_PARAM",
+    "translation": "Invalid parameter"
+  },
+  {
+    "id": "MISSING_PARAM",
+    "translation": "Missing parameter"
+  },
+  {
+    "id": "INVALID_FORMAT",
+    "translation": "Invalid format"
+  },
+  {
+    "id": "UNAUTHORIZED",
+    "translation": "Unauthorized"
+  },
+  {
+    "id": "FORBIDDEN",
+    "translation": "Forbidden"
+  },
+  {
+    "id": "NOT_FOUND",
+    "translation": "Resource not found"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "User not found"
+  },
+  {
+    "id": "USER_EXISTS",
+    "translation": "User already exists"
   }
 ]

@@ -11,8 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/chenguowei/go-i18n/response"
-)
+	)
 
 func TestInit(t *testing.T) {
 	// 测试默认初始化
@@ -83,7 +82,7 @@ func TestMiddleware(t *testing.T) {
 	// 添加测试路由
 	r.GET("/test", func(c *gin.Context) {
 		lang := GetLanguageFromGin(c)
-		response.JSON(c, response.Success, map[string]interface{}{
+		JSON(c, Success, map[string]interface{}{
 			"lang": lang,
 		})
 	})

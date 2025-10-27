@@ -18,5 +18,41 @@
   {
     "id": "USERS_LIST",
     "translation": "用户列表"
+  },
+  {
+    "id": "SUCCESS",
+    "translation": "操作成功"
+  },
+  {
+    "id": "INVALID_PARAM",
+    "translation": "参数错误"
+  },
+  {
+    "id": "MISSING_PARAM",
+    "translation": "缺少参数"
+  },
+  {
+    "id": "INVALID_FORMAT",
+    "translation": "格式错误"
+  },
+  {
+    "id": "UNAUTHORIZED",
+    "translation": "未授权"
+  },
+  {
+    "id": "FORBIDDEN",
+    "translation": "禁止访问"
+  },
+  {
+    "id": "NOT_FOUND",
+    "translation": "资源不存在"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "用户不存在"
+  },
+  {
+    "id": "USER_EXISTS",
+    "translation": "用户已存在"
   }
 ]

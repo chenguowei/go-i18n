@@ -1,11 +1,57 @@
-package response
+package i18n
 
 import (
 	"sync"
+	"time"
+	"github.com/gin-gonic/gin"
 )
 
 // Code 错误码类型
 type Code int
+
+// Response 统一响应结构
+type Response struct {
+	Code    Code        `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+	Meta    *Meta       `json:"meta,omitempty"`
+}
+
+// Meta 响应元数据
+type Meta struct {
+	RequestID  string      `json:"request_id,omitempty"`
+	Language   string      `json:"language,omitempty"`
+	Timestamp  time.Time   `json:"timestamp"`
+	TraceID    string      `json:"trace_id,omitempty"`
+	Version    string      `json:"version,omitempty"`
+	Pagination *Pagination `json:"pagination,omitempty"`
+}
+
+// Pagination 分页信息
+type Pagination struct {
+	Page       int `json:"page"`
+	PerPage    int `json:"per_page"`
+	Total      int `json:"total"`
+	TotalPages int `json:"total_pages"`
+	HasNext    bool `json:"has_next"`
+	HasPrev    bool `json:"has_prev"`
+}
+
+// ResponseTranslator 响应翻译函数接口
+type ResponseTranslator func(c *gin.Context, messageID string, templateData ...map[string]interface{}) string
+
+// 全局响应翻译函数
+var globalResponseTranslator ResponseTranslator
+
+// SetResponseTranslator 设置全局响应翻译函数
+func SetResponseTranslator(translator ResponseTranslator) {
+	globalResponseTranslator = translator
+}
+
+// GetResponseTranslator 获取全局响应翻译函数
+func GetResponseTranslator() ResponseTranslator {
+	return globalResponseTranslator
+}
 
 // 全局错误码注册表
 var (
@@ -503,3 +549,4 @@ func LoadCodesFromMap(messages map[Code]string, status map[Code]int) {
 		httpStatusCodes[code] = httpStatus
 	}
 }
+

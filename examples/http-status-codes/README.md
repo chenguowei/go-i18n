@@ -25,6 +25,28 @@
 5. **`JSONWithTemplateAndStatus(c, code, data, templateData, httpStatus)`**
    - 返回支持模板参数和自定义 HTTP 状态码的响应
    - 适用于需要动态生成消息模板的场景
+   - **支持真正的多语言翻译功能**
+
+## 🌍 多语言翻译功能
+
+### 翻译机制
+- 使用内置的 i18n 翻译系统自动翻译错误码消息
+- 支持模板参数的多语言翻译
+- 通过 `Accept-Language` 头自动检测语言偏好
+- 支持多种语言文件格式（JSON、YAML、TOML）
+
+### 使用方式
+```go
+// 自动根据请求语言翻译错误消息
+response.JSONWithTemplateAndStatus(c, response.Success,
+    data, templateData, http.StatusOK)
+
+// 英文请求返回英文消息
+curl -H "Accept-Language: en" /api/endpoint
+
+// 中文请求返回中文消息
+curl -H "Accept-Language: zh-CN" /api/endpoint
+```
 
 ## 🚀 运行示例
 
@@ -45,6 +67,8 @@ go run .
 | GET | `/unprocessable` | 无法处理的实体 | 422 |
 | PUT | `/accepted` | 请求已接受 | 202 |
 | GET | `/template` | 模板参数响应 | 201 |
+| GET | `/template/i18n` | 多语言模板响应 | 200 |
+| GET | `/template/error` | 多语言错误模板 | 400 |
 
 ### RESTful API 示例
 

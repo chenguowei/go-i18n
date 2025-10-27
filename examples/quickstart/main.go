@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
-	"github.com/chenguowei/go-i18n/response"
 )
 
 func main() {
@@ -40,7 +39,7 @@ func welcomeHandler(c *gin.Context) {
 	message := i18n.TFromGin(c, "WELCOME")
 	lang := i18n.GetLanguageFromGin(c)
 
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"message": message,
 		"lang":    lang,
 	})
@@ -54,7 +53,7 @@ func helloHandler(c *gin.Context) {
 		"name": name,
 	})
 
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"message": message,
 		"lang":    i18n.GetLanguageFromGin(c),
 	})
@@ -65,12 +64,12 @@ func getUserHandler(c *gin.Context) {
 
 	// 模拟用户查找
 	if userID == "404" {
-		response.JSON(c, response.UserNotFound, nil)
+		i18n.JSON(c, i18n.UserNotFound, nil)
 		return
 	}
 
 	// 成功响应
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"id":   userID,
 		"name": "John Doe",
 		"email": "john@example.com",
@@ -79,14 +78,14 @@ func getUserHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
 	// 使用预定义的错误码
-	response.JSON(c, response.InternalError, nil)
+	i18n.JSON(c, i18n.InternalError, nil)
 }
 
 func debugHandler(c *gin.Context) {
 	stats := i18n.GetStats()
 	metrics := i18n.GetMetrics()
 
-	response.JSON(c, response.Success, map[string]interface{}{
+	i18n.JSON(c, i18n.Success, map[string]interface{}{
 		"stats":   stats,
 		"metrics": metrics,
 		"version": i18n.GetVersion(),

@@ -1,4 +1,4 @@
-package response
+package i18n
 
 import (
 	"fmt"
@@ -8,34 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-// Response 统一响应结构
-type Response struct {
-	Code    Code        `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-	Meta    *Meta       `json:"meta,omitempty"`
-}
-
-// Meta 响应元数据
-type Meta struct {
-	RequestID  string      `json:"request_id,omitempty"`
-	Language   string      `json:"language,omitempty"`
-	Timestamp  time.Time   `json:"timestamp"`
-	TraceID    string      `json:"trace_id,omitempty"`
-	Version    string      `json:"version,omitempty"`
-	Pagination *Pagination `json:"pagination,omitempty"`
-}
-
-// Pagination 分页信息
-type Pagination struct {
-	Page       int `json:"page"`
-	PerPage    int `json:"per_page"`
-	Total      int `json:"total"`
-	TotalPages int `json:"total_pages"`
-	HasNext    bool `json:"has_next"`
-	HasPrev    bool `json:"has_prev"`
-}
 
 // JSON 返回 JSON 响应
 func JSON(c *gin.Context, code Code, data interface{}) {
@@ -99,17 +71,63 @@ func JSONWithTemplate(c *gin.Context, code Code, data interface{}, templateData 
 
 // JSONWithTemplateAndStatus 支持模板参数和自定义 HTTP 状态码的响应
 func JSONWithTemplateAndStatus(c *gin.Context, code Code, data interface{}, templateData map[string]interface{}, httpStatus int) {
-	// 这里可以集成 i18n 模板翻译
-	message := GetMessage(code)
-	if templateData != nil {
-		// 简单的模板替换（实际项目中应该使用更强大的模板引擎）
-		for key, value := range templateData {
-			placeholder := "{{." + key + "}}"
-			message = strings.ReplaceAll(message, placeholder, fmt.Sprintf("%v", value))
+	// 获取错误码对应的消息模板
+	messageTemplate := GetMessage(code)
+
+	// 使用全局翻译器翻译消息模板
+	var translatedMessage string
+	if globalResponseTranslator != nil {
+		if templateData != nil {
+			// 使用翻译器的模板翻译功能
+			translatedMessage = globalResponseTranslator(c, messageTemplate, templateData)
+		} else {
+			// 没有模板参数时，直接翻译
+			translatedMessage = globalResponseTranslator(c, messageTemplate)
 		}
 	}
 
-	JSONWithStatusAndMeta(c, code, data, httpStatus, &Meta{})
+	// 如果翻译失败或未找到翻译，使用原始消息模板
+	if translatedMessage == "" {
+		translatedMessage = messageTemplate
+		if templateData != nil {
+			// 降级到简单的模板替换
+			for key, value := range templateData {
+				placeholder := "{{." + key + "}}"
+				translatedMessage = strings.ReplaceAll(translatedMessage, placeholder, fmt.Sprintf("%v", value))
+			}
+		}
+	}
+
+	// 构建响应
+	meta := &Meta{
+		Timestamp: time.Now(),
+	}
+
+	// 设置语言信息到元数据
+	if l, exists := c.Get("i18n_language"); exists {
+		if str, ok := l.(string); ok {
+			meta.Language = str
+		}
+	}
+
+	// 设置请求ID
+	if requestID := c.GetHeader("X-Request-ID"); requestID != "" {
+		meta.RequestID = requestID
+	}
+
+	// 设置追踪ID
+	if traceID := c.GetHeader("X-Trace-ID"); traceID != "" {
+		meta.TraceID = traceID
+	}
+
+	response := Response{
+		Code:    code,
+		Message: translatedMessage,
+		Data:    data,
+		Meta:    meta,
+	}
+
+	c.JSON(httpStatus, response)
 }
 
 // Error 返回错误响应
@@ -147,7 +165,7 @@ func ErrorWithMessageAndStatus(c *gin.Context, code Code, message string, httpSt
 	c.JSON(httpStatus, response)
 }
 
-// Success 成功响应的便捷方法
+// SuccessResponse 成功响应的便捷方法
 func SuccessResponse(c *gin.Context, data interface{}) {
 	JSON(c, Success, data)
 }
@@ -226,87 +244,4 @@ func HandleError(c *gin.Context, err error) {
 	} else {
 		InternalServerErrorResponse(c, nil)
 	}
-}
-
-// 响应构建器
-type Builder struct {
-	code         Code
-	data         interface{}
-	meta         *Meta
-	customMessage string
-}
-
-// NewBuilder 创建响应构建器
-func NewBuilder() *Builder {
-	return &Builder{
-		code: Success,
-		meta: &Meta{},
-	}
-}
-
-// WithCode 设置响应码
-func (b *Builder) WithCode(code Code) *Builder {
-	b.code = code
-	return b
-}
-
-// WithData 设置响应数据
-func (b *Builder) WithData(data interface{}) *Builder {
-	b.data = data
-	return b
-}
-
-// WithMeta 设置元数据
-func (b *Builder) WithMeta(meta *Meta) *Builder {
-	b.meta = meta
-	return b
-}
-
-// WithLanguage 设置语言
-func (b *Builder) WithLanguage(language string) *Builder {
-	b.meta.Language = language
-	return b
-}
-
-// WithRequestID 设置请求ID
-func (b *Builder) WithRequestID(requestID string) *Builder {
-	b.meta.RequestID = requestID
-	return b
-}
-
-// WithTraceID 设置追踪ID
-func (b *Builder) WithTraceID(traceID string) *Builder {
-	b.meta.TraceID = traceID
-	return b
-}
-
-// WithPagination 设置分页信息
-func (b *Builder) WithPagination(pagination Pagination) *Builder {
-	b.meta.Pagination = &pagination
-	return b
-}
-
-// WithCustomMessage 设置自定义消息
-func (b *Builder) WithCustomMessage(message string) *Builder {
-	b.customMessage = message
-	return b
-}
-
-// Send 发送响应
-func (b *Builder) Send(c *gin.Context) {
-	b.meta.Timestamp = time.Now()
-
-	message := b.customMessage
-	if message == "" {
-		message = GetMessage(b.code)
-	}
-
-	response := Response{
-		Code:    b.code,
-		Message: message,
-		Data:    b.data,
-		Meta:    b.meta,
-	}
-
-	c.JSON(http.StatusOK, response)
 }

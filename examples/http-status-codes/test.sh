@@ -57,15 +57,39 @@ echo "6️⃣ 测试模板参数响应 (201)"
 echo "GET /template"
 curl -s -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/template" | jq .
 
-# 测试7: RESTful API - 获取用户列表
+# 测试7: 多语言模板响应 - 英文
 echo ""
-echo "7️⃣ 测试 RESTful API - 获取用户列表"
+echo "7️⃣ 测试多语言模板响应 - 英文"
+echo "GET /template/i18n (英文)"
+curl -s -H "Accept-Language: en" -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/template/i18n" | jq .
+
+# 测试8: 多语言模板响应 - 中文
+echo ""
+echo "8️⃣ 测试多语言模板响应 - 中文"
+echo "GET /template/i18n (中文)"
+curl -s -H "Accept-Language: zh-CN" -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/template/i18n" | jq .
+
+# 测试9: 多语言错误模板 - 英文
+echo ""
+echo "9️⃣ 测试多语言错误模板 - 英文"
+echo "GET /template/error (英文)"
+curl -s -H "Accept-Language: en" -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/template/error" | jq .
+
+# 测试10: 多语言错误模板 - 中文
+echo ""
+echo "🔟 测试多语言错误模板 - 中文"
+echo "GET /template/error (中文)"
+curl -s -H "Accept-Language: zh-CN" -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/template/error" | jq .
+
+# 测试11: RESTful API - 获取用户列表
+echo ""
+echo "1️⃣1️⃣ 测试 RESTful API - 获取用户列表"
 echo "GET /api/v1/users"
 curl -s -w "\nHTTP Status: %{http_code}\n" "$BASE_URL/api/v1/users" | jq .
 
 # 测试8: RESTful API - 创建用户
 echo ""
-echo "8️⃣ 测试 RESTful API - 创建用户"
+echo "1️⃣2️⃣ 测试 RESTful API - 创建用户"
 echo "POST /api/v1/users"
 curl -s -X POST -H "Content-Type: application/json" \
      -d '{"name":"新用户","email":"newuser@example.com"}' \
@@ -105,6 +129,8 @@ echo "- 成功演示了自定义 HTTP 状态码功能"
 echo "- 展示了不同业务场景下的状态码使用"
 echo "- 验证了 RESTful API 的标准状态码响应"
 echo "- 演示了模板参数动态消息生成功能"
+echo "- 实现了真正的多语言翻译功能"
+echo "- 支持通过 Accept-Language 头自动语言检测"
 
 # 关闭服务器
 echo ""

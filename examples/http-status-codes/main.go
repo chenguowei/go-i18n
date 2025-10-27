@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
-	"github.com/chenguowei/go-i18n/response"
 )
 
 func main() {
@@ -21,43 +20,43 @@ func main() {
 
 	// 示例1: 使用默认状态码 (200)
 	r.GET("/default", func(c *gin.Context) {
-		response.JSON(c, response.Success, map[string]interface{}{
+		i18n.JSON(c, i18n.Success, map[string]interface{}{
 			"message": "默认 HTTP 200 状态码",
-			"usage":   "response.JSON()",
+			"usage":   "i18n.JSON()",
 		})
 	})
 
 	// 示例2: 使用自定义成功状态码 (201)
 	r.POST("/created", func(c *gin.Context) {
-		response.JSONWithStatus(c, response.Success, map[string]interface{}{
+		i18n.JSONWithStatus(c, i18n.Success, map[string]interface{}{
 			"message":  "资源创建成功",
-			"usage":    "response.JSONWithStatus()",
+			"usage":    "i18n.JSONWithStatus()",
 			"status":   "HTTP 201 Created",
 		}, http.StatusCreated)
 	})
 
 	// 示例3: 使用自定义错误状态码 (400)
 	r.GET("/bad-request", func(c *gin.Context) {
-		response.ErrorWithStatus(c, response.InvalidParam, http.StatusBadRequest)
+		i18n.ErrorWithStatus(c, i18n.InvalidParam, http.StatusBadRequest)
 	})
 
 	// 示例4: 使用自定义错误消息和状态码 (422)
 	r.GET("/unprocessable", func(c *gin.Context) {
-		response.ErrorWithMessageAndStatus(c, response.InvalidParam,
+		i18n.ErrorWithMessageAndStatus(c, i18n.InvalidParam,
 			"请求参数无法处理", http.StatusUnprocessableEntity)
 	})
 
 	// 示例5: 返回带元数据的自定义状态码响应 (202)
 	r.PUT("/accepted", func(c *gin.Context) {
-		meta := &response.Meta{
+		meta := &i18n.Meta{
 			RequestID: c.GetHeader("X-Request-ID"),
 			Language:  "zh-CN",
 			Version:   "v1.0",
 		}
-		response.JSONWithStatusAndMeta(c, response.Success,
+		i18n.JSONWithStatusAndMeta(c, i18n.Success,
 			map[string]interface{}{
 				"message": "请求已接受，正在处理中",
-				"usage":   "response.JSONWithStatusAndMeta()",
+				"usage":   "i18n.JSONWithStatusAndMeta()",
 			}, http.StatusAccepted, meta)
 	})
 
@@ -89,7 +88,7 @@ func main() {
 			"Timestamp":    time.Now().Format("2006-01-02 15:04:05"),
 		}
 
-		response.JSONWithTemplateAndStatus(c, response.Success,
+		i18n.JSONWithTemplateAndStatus(c, i18n.Success,
 			map[string]interface{}{
 				"template_used": true,
 				"message_type":  "template_based",
@@ -98,47 +97,80 @@ func main() {
 			http.StatusCreated)
 	})
 
+	// 示例7-2: 多语言模板响应演示
+	r.GET("/template/i18n", func(c *gin.Context) {
+		templateData := map[string]interface{}{
+			"ResourceType": "User",
+			"ResourceID":   "12345",
+			"Action":       "created",
+		}
+
+		i18n.JSONWithTemplateAndStatus(c, i18n.Success,
+			map[string]interface{}{
+				"i18n_enabled": true,
+				"endpoint":     "/template/i18n",
+			},
+			templateData,
+			http.StatusOK)
+	})
+
+	// 示例7-3: 错误消息的多语言模板
+	r.GET("/template/error", func(c *gin.Context) {
+		templateData := map[string]interface{}{
+			"FieldName": "email",
+			"Reason":    "format is invalid",
+		}
+
+		i18n.JSONWithTemplateAndStatus(c, i18n.InvalidParam,
+			map[string]interface{}{
+				"error_type": "validation_error",
+				"endpoint":   "/template/error",
+			},
+			templateData,
+			http.StatusBadRequest)
+	})
+
 	// 示例8: 不同业务场景的状态码
 	r.GET("/scenarios", func(c *gin.Context) {
 		scenarios := []map[string]interface{}{
 			{
 				"scenario":   "重定向",
 				"status":     "HTTP 301 Moved Permanently",
-				"usage":      "response.JSONWithStatus()",
+				"usage":      "i18n.JSONWithStatus()",
 				"example":    "资源永久迁移",
 			},
 			{
 				"scenario":   "认证失败",
 				"status":     "HTTP 401 Unauthorized",
-				"usage":      "response.ErrorWithStatus()",
+				"usage":      "i18n.ErrorWithStatus()",
 				"example":    "Token 无效或过期",
 			},
 			{
 				"scenario":   "权限不足",
 				"status":     "HTTP 403 Forbidden",
-				"usage":      "response.ErrorWithStatus()",
+				"usage":      "i18n.ErrorWithStatus()",
 				"example":    "用户无权限访问资源",
 			},
 			{
 				"scenario":   "资源不存在",
 				"status":     "HTTP 404 Not Found",
-				"usage":      "response.ErrorWithStatus()",
+				"usage":      "i18n.ErrorWithStatus()",
 				"example":    "请求的资源不存在",
 			},
 			{
 				"scenario":   "请求超时",
 				"status":     "HTTP 408 Request Timeout",
-				"usage":      "response.ErrorWithStatus()",
+				"usage":      "i18n.ErrorWithStatus()",
 				"example":    "服务器等待请求时超时",
 			},
 			{
 				"scenario":   "服务器内部错误",
 				"status":     "HTTP 500 Internal Server Error",
-				"usage":      "response.ErrorWithStatus()",
+				"usage":      "i18n.ErrorWithStatus()",
 				"example":    "服务器处理请求时发生意外错误",
 			},
 		}
-		response.JSONWithStatus(c, response.Success, scenarios, http.StatusOK)
+		i18n.JSONWithStatus(c, i18n.Success, scenarios, http.StatusOK)
 	})
 
 	// 启动服务器
@@ -150,6 +182,8 @@ func main() {
 	fmt.Println("  GET  /unprocessable       - 无法处理的实体 (422)")
 	fmt.Println("  PUT  /accepted            - 请求已接受 (202)")
 	fmt.Println("  GET  /template            - 模板参数响应 (201)")
+	fmt.Println("  GET  /template/i18n       - 多语言模板响应 (200)")
+	fmt.Println("  GET  /template/error      - 多语言错误模板 (400)")
 	fmt.Println("  GET  /api/v1/users        - 用户列表 (200)")
 	fmt.Println("  POST /api/v1/users        - 创建用户 (201)")
 	fmt.Println("  GET  /api/v1/users/:id    - 获取用户 (200/404)")
@@ -172,7 +206,7 @@ var users = []User{
 }
 
 func listUsers(c *gin.Context) {
-	response.JSONWithStatus(c, response.Success, map[string]interface{}{
+	i18n.JSONWithStatus(c, i18n.Success, map[string]interface{}{
 		"users": users,
 		"total": len(users),
 	}, http.StatusOK)
@@ -181,7 +215,7 @@ func listUsers(c *gin.Context) {
 func createUser(c *gin.Context) {
 	var newUser User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
-		response.ErrorWithMessageAndStatus(c, response.InvalidParam,
+		i18n.ErrorWithMessageAndStatus(c, i18n.InvalidParam,
 			"请求参数格式错误: "+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -190,7 +224,7 @@ func createUser(c *gin.Context) {
 	newUser.ID = fmt.Sprintf("%d", len(users)+1)
 	users = append(users, newUser)
 
-	response.JSONWithStatus(c, response.Success, newUser, http.StatusCreated)
+	i18n.JSONWithStatus(c, i18n.Success, newUser, http.StatusCreated)
 }
 
 func getUser(c *gin.Context) {
@@ -198,12 +232,12 @@ func getUser(c *gin.Context) {
 
 	for _, user := range users {
 		if user.ID == userID {
-			response.JSONWithStatus(c, response.Success, user, http.StatusOK)
+			i18n.JSONWithStatus(c, i18n.Success, user, http.StatusOK)
 			return
 		}
 	}
 
-	response.ErrorWithStatus(c, response.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
 }
 
 func updateUser(c *gin.Context) {
@@ -214,7 +248,7 @@ func updateUser(c *gin.Context) {
 		if user.ID == userID {
 			var updateData User
 			if err := c.ShouldBindJSON(&updateData); err != nil {
-				response.ErrorWithMessageAndStatus(c, response.InvalidParam,
+				i18n.ErrorWithMessageAndStatus(c, i18n.InvalidParam,
 					"请求参数格式错误: "+err.Error(), http.StatusBadRequest)
 				return
 			}
@@ -223,12 +257,12 @@ func updateUser(c *gin.Context) {
 			updateData.ID = userID
 			users[i] = updateData
 
-			response.JSONWithStatus(c, response.Success, updateData, http.StatusOK)
+			i18n.JSONWithStatus(c, i18n.Success, updateData, http.StatusOK)
 			return
 		}
 	}
 
-	response.ErrorWithStatus(c, response.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
 }
 
 func deleteUser(c *gin.Context) {
@@ -244,5 +278,5 @@ func deleteUser(c *gin.Context) {
 		}
 	}
 
-	response.ErrorWithStatus(c, response.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
 }

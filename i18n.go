@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/chenguowei/go-i18n/internal"
-	"github.com/chenguowei/go-i18n/response"
 )
 
 var (
@@ -155,7 +154,7 @@ func NewService(config Config) (*Service, error) {
 
 	// 初始化响应码系统
 	if config.ResponseConfig.AutoInit {
-		response.InitCodes(config.ResponseConfig.LoadBuiltin)
+		InitCodes(config.ResponseConfig.LoadBuiltin)
 	}
 
 	// 创建 bundle
@@ -205,6 +204,9 @@ func NewService(config Config) (*Service, error) {
 	if config.Pool.WarmUp && service.pool != nil {
 		service.pool.WarmUp(config.Pool.Languages)
 	}
+
+	// 设置 response 包的全局翻译器
+	SetResponseTranslator(service.TranslateFromGin)
 
 	return service, nil
 }
