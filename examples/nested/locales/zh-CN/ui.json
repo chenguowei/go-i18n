@@ -1,0 +1,22 @@
+[
+  {
+    "id": "PROFILE_TITLE",
+    "translation": "用户资料"
+  },
+  {
+    "id": "PROFILE_DESCRIPTION",
+    "translation": "管理您的个人信息和偏好设置"
+  },
+  {
+    "id": "EDIT_PROFILE",
+    "translation": "编辑资料"
+  },
+  {
+    "id": "SAVE_CHANGES",
+    "translation": "保存更改"
+  },
+  {
+    "id": "CANCEL",
+    "translation": "取消"
+  }
+]

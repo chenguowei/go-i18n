@@ -1,0 +1,18 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "欢迎"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "你好，{{.name}}！"
+  },
+  {
+    "id": "GOODBYE",
+    "translation": "再见"
+  },
+  {
+    "id": "THANK_YOU",
+    "translation": "谢谢"
+  }
+]

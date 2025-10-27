@@ -1,0 +1,40 @@
+# 分层结构配置示例
+default_language: "zh-CN"
+fallback_language: "en"
+locales_path: "locales"
+
+# 语言文件配置
+locale_config:
+  mode: "nested"  # 结构模式: flat 或 nested
+  languages:
+    - "en"
+    - "zh-CN"
+    - "zh-TW"
+  modules:
+    - "common"   # 通用翻译
+    - "errors"   # 错误信息
+    - "ui"       # 界面文本
+    - "emails"   # 邮件模板
+
+# 缓存配置
+cache:
+  enable: true
+  size: 1000
+  l2_size: 5000
+  ttl: "2h"
+  enable_file: false
+
+# 对象池配置
+pool:
+  enable: true
+  size: 100
+  warm_up: true
+  languages:
+    - "en"
+    - "zh-CN"
+    - "zh-TW"
+
+# 调试和监控
+debug: true
+enable_metrics: true
+enable_watcher: true

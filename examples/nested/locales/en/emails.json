@@ -1,0 +1,18 @@
+[
+  {
+    "id": "WELCOME_SUBJECT",
+    "translation": "Welcome to Our Platform"
+  },
+  {
+    "id": "WELCOME_BODY",
+    "translation": "Hello {{.name}}, welcome to our platform! We're excited to have you on board."
+  },
+  {
+    "id": "RESET_PASSWORD_SUBJECT",
+    "translation": "Reset Your Password"
+  },
+  {
+    "id": "RESET_PASSWORD_BODY",
+    "translation": "Hi {{.name}}, click the link below to reset your password: {{.reset_link}}"
+  }
+]

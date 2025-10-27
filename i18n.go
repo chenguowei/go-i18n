@@ -39,6 +39,9 @@ type Config struct {
 	FallbackLanguage string        `yaml:"fallback_language" json:"fallback_language"`
 	LocalesPath      string        `yaml:"locales_path" json:"locales_path"`
 
+	// 语言文件配置
+	LocaleConfig LocaleConfig `yaml:"locale_config" json:"locale_config"`
+
 	// 缓存配置
 	Cache CacheConfig `yaml:"cache" json:"cache"`
 
@@ -60,6 +63,18 @@ type CacheConfig struct {
 	EnableFile bool          `yaml:"enable_file" json:"enable_file"`
 }
 
+// LocaleConfig 语言文件配置
+type LocaleConfig struct {
+	// 结构模式: "flat" 或 "nested"
+	Mode string `yaml:"mode" json:"mode"`
+
+	// 支持的语言列表
+	Languages []string `yaml:"languages" json:"languages"`
+
+	// 模块列表（仅在嵌套模式下使用）
+	Modules []string `yaml:"modules,omitempty" json:"modules,omitempty"`
+}
+
 // PoolConfig 对象池配置
 type PoolConfig struct {
 	Enable    bool     `yaml:"enable" json:"enable"`
@@ -73,6 +88,10 @@ var DefaultConfig = Config{
 	DefaultLanguage:  "en",
 	FallbackLanguage: "en",
 	LocalesPath:      "locales",
+	LocaleConfig: LocaleConfig{
+		Mode:      "flat",
+		Languages: []string{"en", "zh-CN", "zh-TW"},
+	},
 	Cache: CacheConfig{
 		Enable:     true,
 		Size:       1000,

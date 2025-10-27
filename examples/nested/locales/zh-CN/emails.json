@@ -1,0 +1,18 @@
+[
+  {
+    "id": "WELCOME_SUBJECT",
+    "translation": "欢迎使用我们的平台"
+  },
+  {
+    "id": "WELCOME_BODY",
+    "translation": "你好{{.name}}，欢迎使用我们的平台！我们很高兴您的加入。"
+  },
+  {
+    "id": "RESET_PASSWORD_SUBJECT",
+    "translation": "重置您的密码"
+  },
+  {
+    "id": "RESET_PASSWORD_BODY",
+    "translation": "您好{{.name}}，点击下方链接重置密码：{{.reset_link}}"
+  }
+]

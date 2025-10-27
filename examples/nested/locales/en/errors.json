@@ -1,0 +1,18 @@
+[
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "User not found"
+  },
+  {
+    "id": "INVALID_PARAMS",
+    "translation": "Invalid parameters"
+  },
+  {
+    "id": "UNAUTHORIZED",
+    "translation": "Unauthorized access"
+  },
+  {
+    "id": "INTERNAL_ERROR",
+    "translation": "Internal server error"
+  }
+]

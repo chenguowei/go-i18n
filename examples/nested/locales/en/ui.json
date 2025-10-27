@@ -1,0 +1,22 @@
+[
+  {
+    "id": "PROFILE_TITLE",
+    "translation": "User Profile"
+  },
+  {
+    "id": "PROFILE_DESCRIPTION",
+    "translation": "Manage your personal information and preferences"
+  },
+  {
+    "id": "EDIT_PROFILE",
+    "translation": "Edit Profile"
+  },
+  {
+    "id": "SAVE_CHANGES",
+    "translation": "Save Changes"
+  },
+  {
+    "id": "CANCEL",
+    "translation": "Cancel"
+  }
+]

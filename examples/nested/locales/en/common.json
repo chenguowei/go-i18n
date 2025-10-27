@@ -1,0 +1,18 @@
+[
+  {
+    "id": "WELCOME",
+    "translation": "Welcome"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "Hello, {{.name}}!"
+  },
+  {
+    "id": "GOODBYE",
+    "translation": "Goodbye"
+  },
+  {
+    "id": "THANK_YOU",
+    "translation": "Thank you"
+  }
+]
