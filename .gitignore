@@ -17,3 +17,10 @@ logs/
 .bmad-core/
 .claude/commands/BMad/
 .spec-workflow/
+
+# Ignore example binary files
+examples/*/quickstart
+examples/*/custom-codes
+examples/*/http-status-codes
+examples/*/nested
+examples/*/main
