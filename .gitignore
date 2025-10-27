@@ -1,0 +1,19 @@
+**/logs/
+**/bin/
+# *.json
+*.pprof
+*.trace
+*__debug_*
+build/
+.cursor/
+api_doc/*
+evaluations/*
+config_dev.yml
+.vscode/launch.json
+.cursor/
+.claude/
+CLAUDE.md
+logs/
+.bmad-core/
+.claude/commands/BMad/
+.spec-workflow/
