@@ -38,7 +38,7 @@
 ### 使用方式
 ```go
 // 自动根据请求语言翻译错误消息
-response.JSONWithTemplateAndStatus(c, response.Success,
+i18n.JSONWithTemplateAndStatus(c, i18n.Success,
     data, templateData, http.StatusOK)
 
 // 英文请求返回英文消息
@@ -88,40 +88,58 @@ go run .
 
 ## 💡 使用示例
 
-### 1. 基础用法
+### 1. 基础用法（支持多语言）
 
 ```go
-// 默认状态码 (200)
-response.JSON(c, response.Success, data)
+// 默认状态码 (200) - 自动翻译消息
+i18n.JSON(c, i18n.Success, data)
 
-// 自定义状态码 (201)
-response.JSONWithStatus(c, response.Success, data, http.StatusCreated)
+// 自定义状态码 (201) - 自动翻译消息
+i18n.JSONWithStatus(c, i18n.Success, data, http.StatusCreated)
 ```
 
-### 2. 错误响应
+### 2. 多语言响应机制
+
+所有 JSON 响应函数现在都支持自动多语言翻译：
+
+```go
+// 英文请求
+curl -H "Accept-Language: en" /api/endpoint
+// 返回：{"code":0,"message":"Operation successful"}
+
+// 中文请求
+curl -H "Accept-Language: zh-CN" /api/endpoint
+// 返回：{"code":0,"message":"操作成功"}
+
+// 错误消息也会自动翻译
+curl -H "Accept-Language: zh-CN" /api/bad-request
+// 返回：{"code":1001,"message":"参数错误"}
+```
+
+### 3. 错误响应
 
 ```go
 // 默认错误状态码 (200)
-response.Error(c, response.InvalidParam)
+i18n.Error(c, i18n.InvalidParam)
 
 // 自定义错误状态码 (400)
-response.ErrorWithStatus(c, response.InvalidParam, http.StatusBadRequest)
+i18n.ErrorWithStatus(c, i18n.InvalidParam, http.StatusBadRequest)
 
 // 自定义错误消息和状态码
-response.ErrorWithMessageAndStatus(c, response.InvalidParam,
+i18n.ErrorWithMessageAndStatus(c, i18n.InvalidParam,
     "参数验证失败", http.StatusUnprocessableEntity)
 ```
 
 ### 3. 带元数据的响应
 
 ```go
-meta := &response.Meta{
+meta := &i18n.Meta{
     RequestID: "req-123",
     Language:  "zh-CN",
     Version:   "v1.0",
 }
 
-response.JSONWithStatusAndMeta(c, response.Success,
+i18n.JSONWithStatusAndMeta(c, i18n.Success,
     data, http.StatusCreated, meta)
 ```
 
@@ -135,7 +153,7 @@ templateData := map[string]interface{}{
     "Timestamp":    time.Now().Format("2006-01-02 15:04:05"),
 }
 
-response.JSONWithTemplateAndStatus(c, response.Success,
+i18n.JSONWithTemplateAndStatus(c, i18n.Success,
     data, templateData, http.StatusCreated)
 ```
 
@@ -158,8 +176,8 @@ response.JSONWithTemplateAndStatus(c, response.Success,
    - 500: 服务器内部错误
 
 2. **业务错误码**: 使用业务错误码 + 合适的 HTTP 状态码
-   - `response.UserNotFound` + `404`
-   - `response.InvalidParam` + `400`
-   - `response.Unauthorized` + `401`
+   - `i18n.UserNotFound` + `404`
+   - `i18n.InvalidParam` + `400`
+   - `i18n.Unauthorized` + `401`
 
 3. **一致性**: 在整个项目中保持状态码使用的一致性

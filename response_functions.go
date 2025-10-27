@@ -49,9 +49,24 @@ func JSONWithStatusAndMeta(c *gin.Context, code Code, data interface{}, httpStat
 		meta.TraceID = traceID
 	}
 
+	// 获取错误码对应的消息模板
+	messageTemplate := GetMessage(code)
+
+	// 使用全局翻译器翻译消息模板
+	var translatedMessage string
+	if globalResponseTranslator != nil {
+		// 没有模板参数时，直接翻译
+		translatedMessage = globalResponseTranslator(c, messageTemplate)
+	}
+
+	// 如果翻译失败或未找到翻译，使用原始消息模板
+	if translatedMessage == "" {
+		translatedMessage = messageTemplate
+	}
+
 	response := Response{
 		Code:    code,
-		Message: GetMessage(code),
+		Message: translatedMessage,
 		Data:    data,
 		Meta:    meta,
 	}
