@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
@@ -23,7 +22,7 @@ func main() {
 		Cache: i18n.CacheConfig{
 			Enable: true,
 			Size:   1000,
-			TTL:    2 * time.Hour,
+			TTL:    7200, // 2小时 = 7200秒
 		},
 		Pool: i18n.PoolConfig{
 			Enable:    true,
@@ -82,7 +81,7 @@ func helloHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
 	// 使用错误模块的翻译
-	i18n.JSON(c, i18n.ErrUserNotFound, nil)
+	i18n.JSON(c, i18n.UserNotFound, nil)
 }
 
 func userProfileHandler(c *gin.Context) {

@@ -88,7 +88,8 @@ func loadFromEnv(config *Config) error {
 
 	if val := os.Getenv("I18N_CACHE_TTL"); val != "" {
 		if ttl, err := time.ParseDuration(val); err == nil {
-			config.Cache.TTL = ttl
+			// 将 time.Duration 转换为 int64 秒数
+			config.Cache.TTL = int64(ttl.Seconds())
 		}
 	}
 
@@ -257,7 +258,7 @@ func ConfigForEnvironment(env string) Config {
 		config.Debug = true
 		config.EnableMetrics = false
 		config.EnableWatcher = true
-		config.Cache.TTL = 30 * time.Minute
+		config.Cache.TTL = int64(30 * time.Minute.Seconds())
 		config.Pool.WarmUp = false
 
 	case "testing", "test":

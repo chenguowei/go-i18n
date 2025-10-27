@@ -21,7 +21,7 @@ cache:
   enable: true
   size: 1000
   l2_size: 5000
-  ttl: "2h"
+  ttl: 7200  # 2小时 = 7200秒
   enable_file: false
 
 # 对象池配置

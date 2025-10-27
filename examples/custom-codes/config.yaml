@@ -19,7 +19,7 @@ response_config:
 cache:
   enable: true
   size: 100
-  ttl: "1h"
+  ttl: 3600  # 1小时 = 3600秒
 
 # 对象池配置
 pool:

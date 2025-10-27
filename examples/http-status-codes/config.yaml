@@ -1,14 +1,32 @@
 # HTTP Status Codes 示例配置
-i18n:
-  default_language: zh-CN
-  languages: [zh-CN, en]
-  locales_dir: locales
+default_language: zh-CN
+fallback_language: en
+locales_path: locales
+debug: true
+enable_metrics: false
+enable_watcher: false
 
-response:
+# 语言文件配置
+locale_config:
+  mode: "flat"
+  languages: ["zh-CN", "en"]
+
+# 响应码配置
+response_config:
   load_builtin: true
   auto_init: true
 
+# 缓存配置
 cache:
-  l1_max_size: 1000
-  l2_max_size: 10000
-  ttl: 3600s
+  enable: true
+  ttl: 3600
+  size: 1000
+  l2_size: 10000
+  enable_file: false
+
+# 对象池配置
+pool:
+  enable: true
+  size: 100
+  warm_up: true
+  languages: ["zh-CN", "en"]

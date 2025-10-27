@@ -23,11 +23,11 @@ type CacheEntry struct {
 }
 
 // NewMemoryCache 创建内存缓存
-func NewMemoryCache(maxSize int, ttl time.Duration) CacheManager {
+func NewMemoryCache(maxSize int, ttl int64) CacheManager {
 	return &MemoryCache{
 		items:   make(map[string]*CacheEntry),
 		maxSize: maxSize,
-		ttl:     ttl,
+		ttl:     time.Duration(ttl) * time.Second,
 		stats: CacheStats{
 			Hits:      0,
 			Misses:    0,
@@ -216,9 +216,9 @@ func BuildCacheKey(lang, messageID string, templateData []map[string]interface{}
 
 // CacheConfig 缓存配置（重新定义以避免循环依赖）
 type CacheConfig struct {
-	Enable     bool          `yaml:"enable" json:"enable"`
-	Size       int           `yaml:"size" json:"size"`
-	TTL        time.Duration `yaml:"ttl" json:"ttl"`
-	L2Size     int           `yaml:"l2_size" json:"l2_size"`
-	EnableFile bool          `yaml:"enable_file" json:"enable_file"`
+	Enable     bool  `yaml:"enable" json:"enable"`
+	Size       int   `yaml:"size" json:"size"`
+	TTL        int64 `yaml:"ttl" json:"ttl"`
+	L2Size     int   `yaml:"l2_size" json:"l2_size"`
+	EnableFile bool  `yaml:"enable_file" json:"enable_file"`
 }

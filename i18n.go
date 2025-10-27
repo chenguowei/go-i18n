@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
-	"github.com/gin-gonic/gin"
 
 	"github.com/chenguowei/go-i18n/internal"
 )
@@ -22,22 +22,22 @@ var (
 
 // Service i18n 服务
 type Service struct {
-	bundle         *i18n.Bundle
-	translator     Translator
-	cache          internal.CacheManager
-	pool           internal.PoolManager
-	config         Config
-	watcher        internal.FileWatcher
-	initTime       time.Time
-	mu             sync.RWMutex
+	bundle     *i18n.Bundle
+	translator Translator
+	cache      internal.CacheManager
+	pool       internal.PoolManager
+	config     Config
+	watcher    internal.FileWatcher
+	initTime   time.Time
+	mu         sync.RWMutex
 }
 
 // Config 配置结构
 type Config struct {
 	// 基础配置
-	DefaultLanguage  string        `yaml:"default_language" json:"default_language"`
-	FallbackLanguage string        `yaml:"fallback_language" json:"fallback_language"`
-	LocalesPath      string        `yaml:"locales_path" json:"locales_path"`
+	DefaultLanguage  string `yaml:"default_language" json:"default_language"`
+	FallbackLanguage string `yaml:"fallback_language" json:"fallback_language"`
+	LocalesPath      string `yaml:"locales_path" json:"locales_path"`
 
 	// 语言文件配置
 	LocaleConfig LocaleConfig `yaml:"locale_config" json:"locale_config"`
@@ -59,11 +59,11 @@ type Config struct {
 
 // CacheConfig 缓存配置
 type CacheConfig struct {
-	Enable     bool          `yaml:"enable" json:"enable"`
-	Size       int           `yaml:"size" json:"size"`
-	TTL        time.Duration `yaml:"ttl" json:"ttl"`
-	L2Size     int           `yaml:"l2_size" json:"l2_size"`
-	EnableFile bool          `yaml:"enable_file" json:"enable_file"`
+	Enable     bool  `yaml:"enable" json:"enable"`
+	Size       int   `yaml:"size" json:"size"`
+	TTL        int64 `yaml:"ttl" json:"ttl"`
+	L2Size     int   `yaml:"l2_size" json:"l2_size"`
+	EnableFile bool  `yaml:"enable_file" json:"enable_file"`
 }
 
 // LocaleConfig 语言文件配置
@@ -81,7 +81,7 @@ type LocaleConfig struct {
 // ResponseConfig 响应码配置
 type ResponseConfig struct {
 	LoadBuiltin bool `yaml:"load_builtin" json:"load_builtin"`
-	AutoInit     bool `yaml:"auto_init" json:"auto_init"`
+	AutoInit    bool `yaml:"auto_init" json:"auto_init"`
 }
 
 // PoolConfig 对象池配置
@@ -103,12 +103,12 @@ var DefaultConfig = Config{
 	},
 	ResponseConfig: ResponseConfig{
 		LoadBuiltin: true, // 默认加载内置错误码
-		AutoInit:     true, // 自动初始化
+		AutoInit:    true, // 自动初始化
 	},
 	Cache: CacheConfig{
 		Enable:     true,
 		Size:       1000,
-		TTL:        time.Hour,
+		TTL:        int64(time.Hour.Seconds()),
 		L2Size:     5000,
 		EnableFile: false,
 	},
@@ -179,10 +179,10 @@ func NewService(config Config) (*Service, error) {
 	// 创建对象池管理器
 	if config.Pool.Enable {
 		service.pool = internal.NewPoolManager(internal.PoolConfig{
-			Enable:          config.Pool.Enable,
-			Size:            config.Pool.Size,
-			WarmUp:          config.Pool.WarmUp,
-			Languages:       config.Pool.Languages,
+			Enable:           config.Pool.Enable,
+			Size:             config.Pool.Size,
+			WarmUp:           config.Pool.WarmUp,
+			Languages:        config.Pool.Languages,
 			FallbackLanguage: config.FallbackLanguage,
 		}, bundle)
 	}
@@ -333,7 +333,6 @@ func (s *Service) Close() error {
 }
 
 // 全局便捷方法
-
 
 // T 翻译函数（便捷方法）
 func T(ctx context.Context, messageID string, templateData ...map[string]interface{}) string {

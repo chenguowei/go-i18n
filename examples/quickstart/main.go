@@ -3,14 +3,18 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"github.com/chenguowei/go-i18n"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// 1. 初始化 i18n（使用默认配置）
-	if err := i18n.Init(); err != nil {
-		log.Fatal("Failed to initialize i18n:", err)
+	// if err := i18n.Init(); err != nil {
+	// 	log.Fatal("Failed to initialize i18n:", err)
+	// }
+
+	if err := i18n.InitFromConfigFile("config.yaml"); err != nil {
+		log.Fatal("Failed to initialize i18n from config file:", err)
 	}
 
 	// 2. 创建 Gin 路由
@@ -36,13 +40,10 @@ func main() {
 
 func welcomeHandler(c *gin.Context) {
 	// 简单翻译
-	message := i18n.TFromGin(c, "WELCOME")
-	lang := i18n.GetLanguageFromGin(c)
+	// message := i18n.TFromGin(c, "WELCOME")
+	// lang := i18n.GetLanguageFromGin(c)
 
-	i18n.JSON(c, i18n.Success, map[string]interface{}{
-		"message": message,
-		"lang":    lang,
-	})
+	i18n.JSON(c, i18n.Success, nil)
 }
 
 func helloHandler(c *gin.Context) {
@@ -70,8 +71,8 @@ func getUserHandler(c *gin.Context) {
 
 	// 成功响应
 	i18n.JSON(c, i18n.Success, map[string]interface{}{
-		"id":   userID,
-		"name": "John Doe",
+		"id":    userID,
+		"name":  "John Doe",
 		"email": "john@example.com",
 	})
 }

@@ -1,20 +1,32 @@
-default_language: "en"
-fallback_language: "en"
-locales_path: "./locales"
+# i18n 国际化配置
+default_language: zh-CN # 默认语言
+fallback_language: en # 回退语言
+locales_path: locales # 翻译文件目录
+debug: true # 开发环境启用调试
+enable_metrics: false # 启用监控
+enable_watcher: false # 是否启用文件监听（开发环境可开启）
 
+# 语言文件配置
+locale_config:
+  mode: "flat" # flat 或 nested
+  languages: ["zh-CN", "en"] # 支持的语言列表
+
+# 响应码配置
+response_config:
+  load_builtin: true # 加载内置错误码
+  auto_init: true # 自动初始化
+
+# 缓存配置
 cache:
-  enable: true
-  size: 1000
-  ttl: "1h"
-  l2_size: 5000
-  enable_file: false
+  enable: true # 启用缓存
+  ttl: 3600 # 缓存过期时间（秒）
+  size: 1000 # 最大缓存条目数
+  l2_size: 5000 # L2 缓存大小
+  enable_file: false # 是否启用文件缓存
 
+# 对象池配置
 pool:
-  enable: true
-  size: 100
-  warm_up: true
-  languages: ["en", "zh-CN"]
-
-debug: true
-enable_metrics: true
-enable_watcher: true
+  enable: true # 启用对象池
+  size: 100 # 池大小
+  warm_up: true # 是否预热
+  languages: ["zh-CN", "en"] # 预热语言列表
