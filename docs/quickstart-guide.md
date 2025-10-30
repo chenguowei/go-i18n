@@ -52,46 +52,22 @@ your-project/
 
 **locales/en.json**
 ```json
-[
-  {
-    "id": "WELCOME",
-    "translation": "Welcome"
-  },
-  {
-    "id": "USER_NOT_FOUND",
-    "translation": "User not found"
-  },
-  {
-    "id": "INVALID_PARAMS",
-    "translation": "Invalid parameters"
-  },
-  {
-    "id": "HELLO_USER",
-    "translation": "Hello, {{.name}}!"
-  }
-]
+{
+  "WELCOME": "Welcome",
+  "USER_NOT_FOUND": "User not found",
+  "INVALID_PARAMS": "Invalid parameters",
+  "HELLO_USER": "Hello, {{.name}}!"
+}
 ```
 
 **locales/zh-CN.json**
 ```json
-[
-  {
-    "id": "WELCOME",
-    "translation": "欢迎"
-  },
-  {
-    "id": "USER_NOT_FOUND",
-    "translation": "用户不存在"
-  },
-  {
-    "id": "INVALID_PARAMS",
-    "translation": "参数错误"
-  },
-  {
-    "id": "HELLO_USER",
-    "translation": "你好，{{.name}}！"
-  }
-]
+{
+  "WELCOME": "欢迎",
+  "USER_NOT_FOUND": "用户不存在",
+  "INVALID_PARAMS": "参数错误",
+  "HELLO_USER": "你好，{{.name}}！"
+}
 ```
 
 ### 第二步：编写主程序
@@ -102,8 +78,7 @@ package main
 
 import (
     "github.com/gin-gonic/gin"
-    "github.com/chenguowei/go-i18n"
-    "github.com/chenguowei/go-i18n/response"
+    i18n "github.com/chenguowei/go-i18n"
 )
 
 func main() {
@@ -131,7 +106,7 @@ func welcomeHandler(c *gin.Context) {
     // 简单翻译
     message := i18n.TFromGin(c, "WELCOME")
 
-    response.JSON(c, response.Success, map[string]interface{}{
+    i18n.SuccessResponse(c, map[string]interface{}{
         "message": message,
         "lang":    i18n.GetLanguageFromGin(c),
     })
@@ -145,7 +120,7 @@ func helloHandler(c *gin.Context) {
         "name": name,
     })
 
-    response.JSON(c, response.Success, map[string]interface{}{
+    i18n.SuccessResponse(c, map[string]interface{}{
         "message": message,
         "lang":    i18n.GetLanguageFromGin(c),
     })
@@ -153,7 +128,7 @@ func helloHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
     // 使用预定义的错误码
-    response.JSON(c, response.ErrUserNotFound, nil)
+    i18n.Error(c, i18n.ErrUserNotFound)
 }
 ```
 
@@ -297,9 +272,9 @@ func main() {
 ### 优先级顺序
 
 1. **`X-Language` Header** - 最高优先级
-2. **`Accept-Language` Header** - 浏览器标准
-3. **Cookie** - 用户偏好
-4. **Query Parameter** - URL 参数
+2. **Cookie** - 用户偏好存储
+3. **Query Parameter** - URL 参数
+4. **`Accept-Language` Header** - 浏览器标准
 5. **默认语言** - 兜底方案
 
 ### 使用示例
