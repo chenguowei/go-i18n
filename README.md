@@ -39,6 +39,7 @@ import (
 
 func main() {
     // 1. 初始化 i18n (使用默认配置)
+    // 注意：默认配置会自动加载内置错误码，无需额外初始化
     if err := i18n.Init(); err != nil {
         panic(err)
     }
@@ -115,6 +116,7 @@ func main() {
     }
 
     // 使用自定义配置初始化
+    // 注意：默认配置会自动加载内置错误码，自定义配置也会自动初始化响应码系统
     if err := i18n.InitWithConfig(config); err != nil {
         panic(err)
     }
@@ -141,7 +143,7 @@ func getUserHandler(c *gin.Context) {
 
     if userID == "404" {
         // 使用模板参数的错误响应
-        i18n.JSONWithTemplate(c, i18n.ErrUserNotFound, nil, map[string]interface{}{
+        i18n.JSONWithTemplate(c, i18n.UserNotFound, nil, map[string]interface{}{
             "userID": userID,
         })
         return
@@ -172,32 +174,68 @@ func createUserHandler(c *gin.Context) {
 
 **locales/en.json**
 ```json
-{
-  "WELCOME_MESSAGE": "Hello, {{.name}}!",
-  "USER_CREATED": "User created successfully",
-  "USER_NOT_FOUND": "User with ID {{.userID}} not found",
-  "INVALID_PARAM": "Invalid parameters provided"
-}
+[
+  {
+    "id": "WELCOME_MESSAGE",
+    "translation": "Hello, {{.name}}!"
+  },
+  {
+    "id": "USER_CREATED",
+    "translation": "User created successfully"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "User with ID {{.userID}} not found"
+  },
+  {
+    "id": "INVALID_PARAM",
+    "translation": "Invalid parameters provided"
+  }
+]
 ```
 
 **locales/zh-CN.json**
 ```json
-{
-  "WELCOME_MESSAGE": "你好，{{.name}}！",
-  "USER_CREATED": "用户创建成功",
-  "USER_NOT_FOUND": "ID为{{.userID}}的用户未找到",
-  "INVALID_PARAM": "提供的参数无效"
-}
+[
+  {
+    "id": "WELCOME_MESSAGE",
+    "translation": "你好，{{.name}}！"
+  },
+  {
+    "id": "USER_CREATED",
+    "translation": "用户创建成功"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "ID为{{.userID}}的用户未找到"
+  },
+  {
+    "id": "INVALID_PARAM",
+    "translation": "提供的参数无效"
+  }
+]
 ```
 
 **locales/zh-TW.json**
 ```json
-{
-  "WELCOME_MESSAGE": "你好，{{.name}}！",
-  "USER_CREATED": "用戶創建成功",
-  "USER_NOT_FOUND": "ID為{{.userID}}的用戶未找到",
-  "INVALID_PARAM": "提供的參數無效"
-}
+[
+  {
+    "id": "WELCOME_MESSAGE",
+    "translation": "你好，{{.name}}！"
+  },
+  {
+    "id": "USER_CREATED",
+    "translation": "用戶創建成功"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "ID為{{.userID}}的用戶未找到"
+  },
+  {
+    "id": "INVALID_PARAM",
+    "translation": "提供的參數無效"
+  }
+]
 ```
 
 ## 🌍 语言检测
@@ -253,8 +291,8 @@ curl -H "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8" http://localhost:8080/api/hel
 i18n.SuccessResponse(c, data)
 
 // 错误响应
-i18n.Error(c, i18n.ErrInvalidParam)
-i18n.ErrorWithTemplate(c, i18n.ErrUserNotFound, map[string]interface{}{
+i18n.Error(c, i18n.InvalidParam)
+i18n.JSONWithTemplate(c, i18n.UserNotFound, nil, map[string]interface{}{
     "userID": userID,
 })
 
@@ -306,11 +344,11 @@ enable_watcher: false
 支持通过环境变量覆盖配置：
 
 ```bash
-export GI18N_DEFAULT_LANGUAGE="zh-CN"
-export GI18N_DEBUG="true"
-export GI18N_ENABLE_METRICS="true"
-export GI18N_CACHE_SIZE="5000"
-export GI18N_POOL_SIZE="200"
+export I18N_DEFAULT_LANGUAGE="zh-CN"
+export I18N_DEBUG="true"
+export I18N_ENABLE_METRICS="true"
+export I18N_CACHE_SIZE="5000"
+export I18N_POOL_SIZE="200"
 ```
 
 ### 从配置文件加载
@@ -318,13 +356,21 @@ export GI18N_POOL_SIZE="200"
 ```go
 // 从 YAML 文件加载配置
 err := i18n.InitFromConfigFile("config/i18n.yaml")
+if err != nil {
+    log.Fatalf("Failed to load i18n config: %v", err)
+}
 
 // 或者手动加载配置
 config, err := i18n.LoadConfigFromFile("config/i18n.yaml")
 if err != nil {
-    panic(err)
+    log.Fatalf("Failed to load config file: %v", err)
 }
+
+// 验证配置
 err = i18n.InitWithConfig(config)
+if err != nil {
+    log.Fatalf("Failed to initialize i18n: %v", err)
+}
 ```
 
 ## 🚀 中间件选项
@@ -384,7 +430,7 @@ i18n.Reload()
 ### 多种翻译方式
 
 ```go
-// 从 Gin Context 翻译
+// 从 Gin Context 翻译（推荐使用）
 message := i18n.TFromGin(c, "WELCOME", data)
 
 // 从 context.Context 翻译
@@ -471,6 +517,100 @@ go run examples/quickstart/main.go
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+
+## 🔧 故障排除
+
+### 常见问题
+
+#### 1. 语言文件不生效
+```bash
+# 检查语言文件格式是否正确（必须是数组格式）
+cat locales/en.json
+
+# 检查文件路径是否正确
+ls -la locales/
+
+# 启用调试模式查看详细日志
+export I18N_DEBUG=true
+go run main.go
+```
+
+#### 2. 配置不生效
+```bash
+# 检查环境变量设置
+env | grep I18N_
+
+# 检查配置文件格式
+go run main.go 2>&1 | grep -i error
+
+# 验证配置内容
+I18N_DEBUG=true go run main.go
+```
+
+#### 3. 翻译失败
+```go
+// 在代码中添加调试信息
+lang := i18n.GetLanguageFromGin(c)
+fmt.Printf("Current language: %s\n", lang)
+
+message := i18n.TFromGin(c, "YOUR_MESSAGE_ID")
+fmt.Printf("Translation result: %s\n", message)
+```
+
+#### 4. 错误码未定义
+```go
+// 确保已初始化响应码系统
+if err := i18n.Init(); err != nil {
+    log.Fatal("Failed to initialize i18n:", err)
+}
+
+// 检查错误码是否定义
+func errorHandler(c *gin.Context) {
+    // 使用内置错误码，确保已定义
+    i18n.Error(c, i18n.UserNotFound)
+}
+```
+
+### 调试技巧
+
+#### 启用详细日志
+```go
+config := i18n.Config{
+    Debug:         true,  // 启用调试日志
+    EnableMetrics: true,  // 启用性能指标
+}
+```
+
+#### 检查系统状态
+```go
+// 获取统计信息
+stats := i18n.GetStats()
+fmt.Printf("Cache stats: %+v\n", stats)
+
+// 获取性能指标
+metrics := i18n.GetMetrics()
+fmt.Printf("Performance metrics: %+v\n", metrics)
+```
+
+#### 测试语言检测
+```bash
+# 测试不同语言检测方式
+curl -H "X-Language: zh-CN" http://localhost:8080/api/test
+curl -b "lang=zh-CN" http://localhost:8080/api/test
+curl "http://localhost:8080/api/test?lang=zh-CN"
+curl -H "Accept-Language: zh-CN,zh;q=0.9" http://localhost:8080/api/test
+```
+
+### 错误代码参考
+
+| 错误类型 | 错误码 | 常见原因 | 解决方案 |
+|---------|--------|----------|----------|
+| 配置错误 | panic | 配置文件格式错误 | 检查 YAML 语法 |
+| 文件未找到 | - | 语言文件路径错误 | 检查文件路径和权限 |
+| 翻译失败 | messageID | 语言文件中无对应翻译 | 检查 messageID 拼写 |
+| 初始化失败 | - | 依赖或配置问题 | 检查 go.mod 和配置 |
+
+---
 
 ## 🙏 致谢
 

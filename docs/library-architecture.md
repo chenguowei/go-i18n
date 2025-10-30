@@ -591,53 +591,53 @@ func LoadConfigFromFile(filename string) (Config, error) {
 
 // loadFromEnv 从环境变量加载配置
 func loadFromEnv(config *Config) error {
-    if val := os.Getenv("GI18N_DEFAULT_LANGUAGE"); val != "" {
+    if val := os.Getenv("I18N_DEFAULT_LANGUAGE"); val != "" {
         config.DefaultLanguage = val
     }
 
-    if val := os.Getenv("GI18N_FALLBACK_LANGUAGE"); val != "" {
+    if val := os.Getenv("I18N_FALLBACK_LANGUAGE"); val != "" {
         config.FallbackLanguage = val
     }
 
-    if val := os.Getenv("GI18N_LOCALES_PATH"); val != "" {
+    if val := os.Getenv("I18N_LOCALES_PATH"); val != "" {
         config.LocalesPath = val
     }
 
-    if val := os.Getenv("GI18N_DEBUG"); val != "" {
+    if val := os.Getenv("I18N_DEBUG"); val != "" {
         config.Debug = val == "true" || val == "1"
     }
 
-    if val := os.Getenv("GI18N_ENABLE_METRICS"); val != "" {
+    if val := os.Getenv("I18N_ENABLE_METRICS"); val != "" {
         config.EnableMetrics = val == "true" || val == "1"
     }
 
-    if val := os.Getenv("GI18N_ENABLE_WATCHER"); val != "" {
+    if val := os.Getenv("I18N_ENABLE_WATCHER"); val != "" {
         config.EnableWatcher = val == "true" || val == "1"
     }
 
     // 缓存配置
-    if val := os.Getenv("GI18N_CACHE_ENABLE"); val != "" {
+    if val := os.Getenv("I18N_CACHE_ENABLE"); val != "" {
         config.Cache.Enable = val == "true" || val == "1"
     }
 
-    if val := os.Getenv("GI18N_CACHE_SIZE"); val != "" {
+    if val := os.Getenv("I18N_CACHE_SIZE"); val != "" {
         if size, err := parseInt(val); err == nil {
             config.Cache.Size = size
         }
     }
 
-    if val := os.Getenv("GI18N_CACHE_TTL"); val != "" {
+    if val := os.Getenv("I18N_CACHE_TTL"); val != "" {
         if ttl, err := time.ParseDuration(val); err == nil {
             config.Cache.TTL = ttl
         }
     }
 
     // 池配置
-    if val := os.Getenv("GI18N_POOL_ENABLE"); val != "" {
+    if val := os.Getenv("I18N_POOL_ENABLE"); val != "" {
         config.Pool.Enable = val == "true" || val == "1"
     }
 
-    if val := os.Getenv("GI18N_POOL_SIZE"); val != "" {
+    if val := os.Getenv("I18N_POOL_SIZE"); val != "" {
         if size, err := parseInt(val); err == nil {
             config.Pool.Size = size
         }

@@ -27,7 +27,7 @@ go get github.com/chenguowei/go-i18n@latest
 ### 方式二：源码安装
 
 ```bash
-git clone https://github.com/your-org/go-i18n.git
+git clone https://github.com/chenguowei/go-i18n.git
 cd go-i18n
 go install ./...
 ```
@@ -52,22 +52,46 @@ your-project/
 
 **locales/en.json**
 ```json
-{
-  "WELCOME": "Welcome",
-  "USER_NOT_FOUND": "User not found",
-  "INVALID_PARAMS": "Invalid parameters",
-  "HELLO_USER": "Hello, {{.name}}!"
-}
+[
+  {
+    "id": "WELCOME",
+    "translation": "Welcome"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "User not found"
+  },
+  {
+    "id": "INVALID_PARAMS",
+    "translation": "Invalid parameters"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "Hello, {{.name}}!"
+  }
+]
 ```
 
 **locales/zh-CN.json**
 ```json
-{
-  "WELCOME": "欢迎",
-  "USER_NOT_FOUND": "用户不存在",
-  "INVALID_PARAMS": "参数错误",
-  "HELLO_USER": "你好，{{.name}}！"
-}
+[
+  {
+    "id": "WELCOME",
+    "translation": "欢迎"
+  },
+  {
+    "id": "USER_NOT_FOUND",
+    "translation": "用户不存在"
+  },
+  {
+    "id": "INVALID_PARAMS",
+    "translation": "参数错误"
+  },
+  {
+    "id": "HELLO_USER",
+    "translation": "你好，{{.name}}！"
+  }
+]
 ```
 
 ### 第二步：编写主程序
@@ -128,7 +152,7 @@ func helloHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
     // 使用预定义的错误码
-    i18n.Error(c, i18n.ErrUserNotFound)
+    i18n.Error(c, i18n.UserNotFound)
 }
 ```
 
@@ -193,7 +217,7 @@ func main() {
         Cache: i18n.CacheConfig{
             Enable: true,
             Size:   5000,
-            TTL:    2 * time.Hour,
+            TTL:    int64((2 * time.Hour).Seconds()),
         },
         Pool: i18n.PoolConfig{
             Enable: true,

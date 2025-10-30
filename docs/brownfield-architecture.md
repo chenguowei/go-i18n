@@ -281,12 +281,12 @@ go build -v ./...               # 详细构建
 go install .                    # 本地安装
 
 # 调试
-GI18N_DEBUG=true go run examples/quickstart/main.go  # 启用调试模式
+I18N_DEBUG=true go run examples/quickstart/main.go  # 启用调试模式
 ```
 
 ### 调试和故障排除
 
-- **调试模式**: 设置配置中 `Debug: true` 或环境变量 `GI18N_DEBUG=true`
+- **调试模式**: 设置配置中 `Debug: true` 或环境变量 `I18N_DEBUG=true`
 - **日志输出**: 调试信息会输出到标准控制台，包含语言检测、文件加载、翻译时间等信息
 - **常见问题**:
   - 语言文件未找到：检查 `LocalesPath` 配置
@@ -331,17 +331,18 @@ enable_watcher: false
 ### 环境变量支持
 
 支持的环境变量 (从代码中提取):
-- `GI18N_DEFAULT_LANGUAGE`
-- `GI18N_FALLBACK_LANGUAGE`
-- `GI18N_LOCALES_PATH`
-- `GI18N_DEBUG`
-- `GI18N_ENABLE_METRICS`
-- `GI18N_ENABLE_WATCHER`
-- `GI18N_CACHE_ENABLE`
-- `GI18N_CACHE_SIZE`
-- `GI18N_CACHE_TTL`
-- `GI18N_POOL_ENABLE`
-- `GI18N_POOL_SIZE`
+- `I18N_DEFAULT_LANGUAGE`
+- `I18N_FALLBACK_LANGUAGE`
+- `I18N_LOCALES_PATH`
+- `I18N_DEBUG`
+- `I18N_ENABLE_METRICS`
+- `I18N_ENABLE_WATCHER`
+- `I18N_CACHE_ENABLE`
+- `I18N_CACHE_SIZE`
+- `I18N_CACHE_TTL`
+- `I18N_CACHE_L2_SIZE`
+- `I18N_POOL_ENABLE`
+- `I18N_POOL_SIZE`
 
 ---
 
