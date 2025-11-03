@@ -128,6 +128,31 @@ func ResetCodes() {
 	initialized = false
 }
 
+// ensureInitialized 确保错误码系统已初始化（避免锁重入）
+func ensureInitialized() {
+	if !initialized {
+		mu.Lock()
+		defer mu.Unlock()
+
+		// 双重检查，防止在等待锁时其他 goroutine 已经初始化
+		if !initialized {
+			// 初始化空的映射表
+			codeMessages = make(map[Code]string)
+			httpStatusCodes = make(map[Code]int)
+
+			// 加载内置错误码
+			for code, message := range builtinCodeMessages {
+				codeMessages[code] = message
+			}
+			for code, status := range builtinHTTPStatusCodes {
+				httpStatusCodes[code] = status
+			}
+
+			initialized = true
+		}
+	}
+}
+
 // LoadBuiltinCodes 加载内置错误码（可以重复调用）
 func LoadBuiltinCodes() {
 	mu.Lock()
@@ -174,13 +199,10 @@ func LoadBuiltinCodesForce() {
 
 // GetMessage 获取错误码对应的消息
 func GetMessage(code Code) string {
+	ensureInitialized()
+
 	mu.RLock()
 	defer mu.RUnlock()
-
-	if !initialized {
-		// 自动初始化并加载内置错误码
-		InitCodes(true)
-	}
 
 	if message, exists := codeMessages[code]; exists {
 		return message
@@ -190,18 +212,15 @@ func GetMessage(code Code) string {
 
 // GetHTTPStatus 获取错误码对应的 HTTP 状态码
 func GetHTTPStatus(code Code) int {
+	ensureInitialized()
+
 	mu.RLock()
 	defer mu.RUnlock()
-
-	if !initialized {
-		// 自动初始化并加载内置错误码
-		InitCodes(true)
-	}
 
 	if status, exists := httpStatusCodes[code]; exists {
 		return status
 	}
-	return 500
+	return 200
 }
 
 // IsSuccess 判断是否为成功状态
@@ -232,36 +251,30 @@ func GetCategory(code Code) ErrorCategory {
 
 // SetCustomMessage 设置自定义消息
 func SetCustomMessage(code Code, message string) {
+	ensureInitialized()
+
 	mu.Lock()
 	defer mu.Unlock()
-
-	if !initialized {
-		InitCodes(false)
-	}
 
 	codeMessages[code] = message
 }
 
 // SetHTTPStatus 设置自定义 HTTP 状态码
 func SetHTTPStatus(code Code, status int) {
+	ensureInitialized()
+
 	mu.Lock()
 	defer mu.Unlock()
-
-	if !initialized {
-		InitCodes(false)
-	}
 
 	httpStatusCodes[code] = status
 }
 
 // RegisterCustomCode 注册自定义错误码
 func RegisterCustomCode(code Code, message string, httpStatus int) {
+	ensureInitialized()
+
 	mu.Lock()
 	defer mu.Unlock()
-
-	if !initialized {
-		InitCodes(false)
-	}
 
 	codeMessages[code] = message
 	httpStatusCodes[code] = httpStatus
@@ -337,12 +350,10 @@ type CodeDefinition struct {
 }
 
 func BatchRegisterCodes(codes []CodeDefinition) {
+	ensureInitialized()
+
 	mu.Lock()
 	defer mu.Unlock()
-
-	if !initialized {
-		InitCodes(false)
-	}
 
 	for _, def := range codes {
 		codeMessages[def.Code] = def.Message
@@ -352,12 +363,10 @@ func BatchRegisterCodes(codes []CodeDefinition) {
 
 // LoadCodesFromMap 从映射表加载错误码
 func LoadCodesFromMap(messages map[Code]string, status map[Code]int) {
+	ensureInitialized()
+
 	mu.Lock()
 	defer mu.Unlock()
-
-	if !initialized {
-		InitCodes(false)
-	}
 
 	for code, message := range messages {
 		codeMessages[code] = message
