@@ -65,7 +65,7 @@ func getUserHandler(c *gin.Context) {
 
 	// 模拟用户查找
 	if userID == "404" {
-		i18n.JSON(c, i18n.UserNotFound, nil)
+		i18n.JSON(c, i18n.InvalidParam, nil)
 		return
 	}
 

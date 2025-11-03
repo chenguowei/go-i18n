@@ -237,7 +237,7 @@ func getUser(c *gin.Context) {
 		}
 	}
 
-	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.InvalidParam, http.StatusNotFound)
 }
 
 func updateUser(c *gin.Context) {
@@ -262,7 +262,7 @@ func updateUser(c *gin.Context) {
 		}
 	}
 
-	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.InvalidParam, http.StatusNotFound)
 }
 
 func deleteUser(c *gin.Context) {
@@ -278,5 +278,5 @@ func deleteUser(c *gin.Context) {
 		}
 	}
 
-	i18n.ErrorWithStatus(c, i18n.NotFound, http.StatusNotFound)
+	i18n.ErrorWithStatus(c, i18n.InvalidParam, http.StatusNotFound)
 }

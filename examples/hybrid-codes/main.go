@@ -63,7 +63,6 @@ func addCustomCodes() {
 
 	// 设置自定义消息覆盖内置错误码
 	i18n.SetCustomMessage(i18n.InvalidParam, "CUSTOM_INVALID_PARAM")
-	i18n.SetCustomMessage(i18n.UserNotFound, "CUSTOM_USER_NOT_FOUND")
 
 	fmt.Println("✅ Hybrid error codes setup completed")
 }
@@ -88,7 +87,7 @@ func builtinHandler(c *gin.Context) {
 	}
 
 	if c.Query("error") == "user" {
-		i18n.JSON(c, i18n.UserNotFound, map[string]interface{}{
+		i18n.JSON(c, i18n.InvalidParam, map[string]interface{}{
 			"error": "User not found",
 		})
 	}

@@ -81,7 +81,7 @@ func helloHandler(c *gin.Context) {
 
 func errorHandler(c *gin.Context) {
 	// 使用错误模块的翻译
-	i18n.JSON(c, i18n.UserNotFound, nil)
+	i18n.JSON(c, i18n.InvalidParam, nil)
 }
 
 func userProfileHandler(c *gin.Context) {

@@ -17,6 +17,7 @@ logs/
 .bmad-core/
 .claude/commands/BMad/
 .spec-workflow/
+.serena/
 
 # Ignore example binary files
 examples/*/quickstart

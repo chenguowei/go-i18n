@@ -259,16 +259,12 @@ initializeCustomErrorCodes()
 ```go
 response.GetCategory(code) // 返回 ErrorCategory
 // - CategorySuccess
-// - CategoryClient
-// - CategoryServer
-// - CategoryUnknown
+// - CategoryError
 ```
 
-### 按范围分类
+### 基础分类
 ```go
 response.IsSuccess(code)     // 是否为成功
-response.IsClientError(code)  // 是否为客户端错误 (1000-1999)
-response.IsServerError(code)  // 是否为服务器错误 (2000-2999)
 response.IsError(code)        // 是否为错误状态
 ```
 

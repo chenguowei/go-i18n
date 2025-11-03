@@ -28,7 +28,7 @@ func TestInitWithConfig(t *testing.T) {
 		Cache: CacheConfig{
 			Enable: true,
 			Size:   100,
-			TTL:    time.Minute,
+			TTL:    int64(time.Minute.Seconds()),
 		},
 		Pool: PoolConfig{
 			Enable:    true,
@@ -127,7 +127,7 @@ func TestConfigValidation(t *testing.T) {
 			Enable: true,
 			Size:   100,
 			L2Size: 1000,
-			TTL:    time.Hour,
+			TTL:    int64(time.Hour.Seconds()),
 		},
 		Pool: PoolConfig{
 			Enable: true,
@@ -207,7 +207,7 @@ func TestIntegration(t *testing.T) {
 		Cache: CacheConfig{
 			Enable: true,
 			Size:   100,
-			TTL:    time.Minute,
+			TTL:    int64(time.Minute.Seconds()),
 		},
 		Pool: PoolConfig{
 			Enable:    true,

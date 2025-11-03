@@ -104,12 +104,10 @@ func JSONWithTemplateAndStatus(c *gin.Context, code Code, data interface{}, temp
 	// 如果翻译失败或未找到翻译，使用原始消息模板
 	if translatedMessage == "" {
 		translatedMessage = messageTemplate
-		if templateData != nil {
-			// 降级到简单的模板替换
-			for key, value := range templateData {
-				placeholder := "{{." + key + "}}"
-				translatedMessage = strings.ReplaceAll(translatedMessage, placeholder, fmt.Sprintf("%v", value))
-			}
+		// 降级到简单的模板替换
+		for key, value := range templateData {
+			placeholder := "{{." + key + "}}"
+			translatedMessage = strings.ReplaceAll(translatedMessage, placeholder, fmt.Sprintf("%v", value))
 		}
 	}
 
@@ -192,17 +190,17 @@ func BadRequestResponse(c *gin.Context, data interface{}) {
 
 // Unauthorized 401 错误响应
 func UnauthorizedResponse(c *gin.Context, data interface{}) {
-	JSON(c, Unauthorized, data)
+	JSONWithStatus(c, InvalidParam, data, http.StatusUnauthorized)
 }
 
 // Forbidden 403 错误响应
 func ForbiddenResponse(c *gin.Context, data interface{}) {
-	JSON(c, Forbidden, data)
+	JSONWithStatus(c, InvalidParam, data, http.StatusForbidden)
 }
 
 // NotFound 404 错误响应
 func NotFoundResponse(c *gin.Context, data interface{}) {
-	JSON(c, NotFound, data)
+	JSONWithStatus(c, InvalidParam, data, http.StatusNotFound)
 }
 
 // InternalServerError 500 错误响应

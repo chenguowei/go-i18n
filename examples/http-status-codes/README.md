@@ -176,8 +176,7 @@ i18n.JSONWithTemplateAndStatus(c, i18n.Success,
    - 500: 服务器内部错误
 
 2. **业务错误码**: 使用业务错误码 + 合适的 HTTP 状态码
-   - `i18n.UserNotFound` + `404`
-   - `i18n.InvalidParam` + `400`
-   - `i18n.Unauthorized` + `401`
+   - `i18n.InvalidParam` + `400` (可用于参数错误、资源不存在等)
+   - `i18n.InternalError` + `500` (服务器内部错误)
 
 3. **一致性**: 在整个项目中保持状态码使用的一致性

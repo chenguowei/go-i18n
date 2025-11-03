@@ -183,8 +183,6 @@ if response.IsInitialized() {
 |------|----------|------|
 | `GetCategory(Code)` | ErrorCategory | 获取错误分类 |
 | `IsSuccess(Code)` | bool | 是否为成功状态 |
-| `IsClientError(Code)` | bool | 是否为客户端错误 |
-| `IsServerError(Code)` | bool | 是否为服务器错误 |
 | `IsError(Code)` | bool | 是否为错误状态 |
 
 ## 🎯 最佳实践指南
